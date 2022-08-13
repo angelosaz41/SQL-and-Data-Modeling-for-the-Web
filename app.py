@@ -301,6 +301,22 @@ def search_artists():
 #  Search Venue
 #  ----------------------------------------------------------------
 
+@app.route("/artists/<artist_id>/delete", methods=["GET"])
+def delete_artist(artist_id):
+    try:
+        artist = Artist.query.get(artist_id)
+        db.session.delete(artist)
+        db.session.commit()
+        flash("Artist " + artist.name+ " was deleted successfully!")
+    except:
+        db.session.rollback()
+        print(sys.exc_info())
+        flash("Artist was not deleted successfully.")
+    finally:
+        db.session.close()
+
+    return redirect(url_for("index"))
+
 
 
 @app.route('/artists/<int:artist_id>')
@@ -346,7 +362,6 @@ def show_artist(artist_id):
 
 #  Update Artist
 #  ----------------------------------------------------------------
-
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
     form = ArtistForm()  
@@ -354,7 +369,6 @@ def edit_artist(artist_id):
     form.genres.data = artist.genres.split(",") # convert genre string back to array
     
     return render_template('forms/edit_artist.html', form=form, artist=artist)
-
 
 
 
